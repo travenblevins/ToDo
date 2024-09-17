@@ -1,0 +1,43 @@
+body {
+    height:100vh;
+    margin:0;
+    padding:0;
+}
+
+.outer {
+    padding:0 0 0 5px;
+    height:100%;
+}
+
+.nav {
+    display:flex;
+    justify-content:space-between;
+}
+
+.container {
+    border:solid 1px black;
+    height:100%;
+}
+
+.row {
+    display:flex;
+    height:100%;
+    padding:0;
+    margin:0;
+}
+
+.column-1 {
+    display:flex;
+    flex-direction:column;
+    flex-grow:1;
+    height:100%;
+    border:1px solid black;
+}
+
+.column-2 {
+    display:flex;
+    flex-direction:column;
+    flex-grow:3;
+    height:100%;
+    border:1px solid black;
+}

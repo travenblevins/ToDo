@@ -42,3 +42,7 @@ body {
     height:100%;
     border:1px solid black;
 }
+
+.top-item {
+    display: flex;
+}

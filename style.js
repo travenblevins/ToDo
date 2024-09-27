@@ -1,3 +1,50 @@
+class task {
+    constructor(value) {
+    this.value = value
+    }
+    edit(input) {
+        value.value = input
+    }
+
+    markCompleted(value) {
+        value.background = 'green'
+    }
+
+
+}
+
+class list {
+    constructor(task, id) {
+        this.task = task
+        id = 'task'
+    }
+
+    removeTask(task) {
+        task.remove
+    }
+
+    addTask(input) {
+        const newTask = input.value
+    }
+}
+
+class user {
+    constructor(name, list) {
+        this.name = name
+        this.list = list
+        id = 'user'
+    }
+    addlist() {
+
+    }
+}
+
+
+
+
+
+
+
 const button = document.querySelector('.top-button');
 const input = document.getElementById('input');
 const list = document.querySelector('.list-title');

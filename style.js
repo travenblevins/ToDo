@@ -3,7 +3,7 @@ class task {
     this.value = value
     }
     edit(input) {
-        value.value = input
+        this.value = input
     }
 
     markCompleted(value) {
@@ -16,11 +16,10 @@ class task {
 class list {
     constructor(task, id) {
         this.task = task
-        id = 'task'
     }
 
     removeTask(task) {
-        task.remove
+        task.remove()
     }
 
     addTask(input) {
@@ -41,46 +40,70 @@ class user {
 
 
 
-
-
-
-
-const button = document.querySelector('.top-button');
-const input = document.getElementById('input');
-const list = document.querySelector('.list-title');
+const topButton = document.querySelector('.top-button');
+box = document.querySelector('.box');
 
 // Declare newButton and taskInput outside the event listener
 
+topButton.addEventListener('click', function add() {
+    const listContainer = document.createElement('div')
 
-button.addEventListener('click', function add() {
-    const inputValue = input.value;
-    if (inputValue !== '') {
-        const newItem = document.createElement('li');
+    const newList = new task(input.value);
 
-        const text = document.createTextNode(inputValue);
-        newItem.append(text);
+    const newListElement = document.createElement('div');
 
-        // Now these variables are assigned globally (in scope of this file)
-        taskInput = document.createElement('input');
-        taskInput.classList.add('taskInput')
-        newItem.append(taskInput);
+    newListElement.innerHTML = input.value;
 
-        const newButton = document.createElement('button');
-        newButton.textContent = 'Add a task';
-        newItem.append(newButton);
+    const addButton = document.createElement('button');
 
-        list.appendChild(newItem);
-        input.value = '';
-        newButton.addEventListener('click', function () {
-            if (taskInput !== '') {
-                const task = document.createElement('h3')
-                task.textContent = taskInput.value
-                newItem.appendChild(task)
-                taskInput.value = ''
-            }
-        })
-    }
+    const inputTask = document.createElement('input');
+
+    addButton.innerHTML = 'Add Item';
+
+    const listItem = document.createElement('div');
+
+    listItem.appendChild(newListElement)
+
+    listItem.appendChild(inputTask)
     
+    listItem.appendChild(addButton)
+
+    listItem.classList.add('row')
+
+    listContainer.appendChild(listItem)
+
+    input.value = ''
+
+    box.appendChild(listContainer)
+    addButton.addEventListener('click', function() {
+        const newTask = new task(inputTask.value)
+
+        const newTaskElement = document.createElement('div')
+
+        newTaskElement.classList.add('column')
+
+        newTaskElement.innerHTML = inputTask.value
+
+        editButton = document.createElement('button')
+
+        editButton.innerHTML = 'Edit'
+
+        deleteButton = document.createElement('button')
+
+        deleteButton.innerHTML = 'Delete'
+
+        const taskItem = document.createElement('div')
+
+        taskItem.appendChild(newTaskElement)
+
+        taskItem.appendChild(editButton)
+
+        taskItem.appendChild(deleteButton)
+
+        taskItem.classList.add('row')
+
+        listContainer.appendChild(taskItem)
+    })
 });
 
 

@@ -10,16 +10,11 @@ class task {
         value.background = 'green'
     }
 
-
 }
 
 class list {
     constructor(task, id) {
         this.task = task
-    }
-
-    removeTask(task) {
-        task.remove()
     }
 
     addTask(input) {
@@ -58,6 +53,8 @@ topButton.addEventListener('click', function add() {
 
     const inputTask = document.createElement('input');
 
+    inputTask.placeholder = 'Add Task';
+
     addButton.innerHTML = 'Add Item';
 
     const listItem = document.createElement('div');
@@ -80,8 +77,6 @@ topButton.addEventListener('click', function add() {
 
         const newTaskElement = document.createElement('div')
 
-        newTaskElement.classList.add('column')
-
         newTaskElement.innerHTML = inputTask.value
 
         editButton = document.createElement('button')
@@ -103,6 +98,32 @@ topButton.addEventListener('click', function add() {
         taskItem.classList.add('row')
 
         listContainer.appendChild(taskItem)
+
+        inputTask.value = ''
+
+        deleteButton.addEventListener('click', function() {
+            taskItem.remove()
+        })
+
+        editButton.addEventListener('click', function() {
+            const editInput = document.createElement('input');
+            editInput.placeholder = 'Edit Task';
+            editInput.value = newTaskElement.innerHTML; // Set current task value in input
+            
+            const saveButton = document.createElement('button');
+            saveButton.innerHTML = 'Save';
+
+            // Insert the edit input and save button into the task item
+            taskItem.appendChild(editInput);
+            taskItem.appendChild(saveButton);
+
+            // Save button functionality
+            saveButton.addEventListener('click', function() {
+                newTaskElement.innerHTML = editInput.value; // Update task display
+                taskItem.removeChild(editInput); // Remove edit input
+                taskItem.removeChild(saveButton); 
+            })
+        })
     })
 });
 

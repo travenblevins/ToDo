@@ -12,6 +12,7 @@ body {
     display:flex;
     justify-content:space-between;
     background-color: aquamarine;
+    padding:0 0 0 10px;
 }
 
 .container {
@@ -63,4 +64,10 @@ input {
     height:100%;
     border:1px solid black;
     padding: 0 0 0 10px;
+}
+
+.box {
+    display:flex;
+    flex-direction: column;
+    gap:5px;
 }

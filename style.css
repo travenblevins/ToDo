@@ -2,6 +2,8 @@ body {
     height:100vh;
     margin:0;
     padding:0;
+    background-color:#272a29;
+    color:lightgray
 }
 
 .outer {
@@ -13,6 +15,8 @@ body {
     justify-content:space-between;
     background-color: aquamarine;
     padding:0 0 0 10px;
+    color:#191617;
+    align-items: center;
 }
 
 .container {
@@ -70,4 +74,14 @@ input {
     display:flex;
     flex-direction: column;
     gap:5px;
+}
+
+.listItem, .taskItem {
+    min-height: 50px;  /* Minimum height to prevent resizing */
+    padding: 10px;  /* Add padding for better spacing */
+    box-sizing: border-box;  /* Ensure padding is included in the total width and height */
+    display: flex;
+    align-items: center;  /* Vertically center content */
+    margin-bottom: 10px;  /* Add spacing between items */
+    gap:4px;
 }

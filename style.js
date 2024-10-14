@@ -127,11 +127,22 @@ topButton.addEventListener('click', function add() {
     saveToLocalStorage
 
     deleteButton.addEventListener('click', function() {
-        if(listItem) {
-            listItem.remove(); // Remove the list from the DOM
-            taskHolder.innerHTML = ''; // Clear all tasks
-        }
+        const listItem = this.parentElement; // Get the parent list item (the current list)
+        const listColor = listItem.style.backgroundColor; // Get the list's background color
+    
+        // Loop through all tasks in the taskHolder
+        const allTasks = taskHolder.querySelectorAll('.taskItem');
+        allTasks.forEach(task => {
+            if (task.style.backgroundColor === listColor) {
+                task.remove(); // Remove the task if its background color matches the list
+            }
+        });
+    
+        listItem.remove(); // Remove the list from the DOM
+        saveToLocalStorage(); // Save changes to local storage
     });
+    
+    
 
     addButton.addEventListener('click', function() {
         const taskValue = inputTask.value;
@@ -255,11 +266,22 @@ function restoreList(listData) {
 
     // Event listener for the delete button
     deleteButton.addEventListener('click', function() {
-        if(listItem) {
-            taskHolder.innerHTML = ''; // Clear all tasks
-            listItem.remove(); // Remove the list from the DOM
-        }
+        const listItem = this.parentElement; // Get the parent list item (the current list)
+        const listColor = listItem.style.backgroundColor; // Get the list's background color
+    
+        // Loop through all tasks in the taskHolder
+        const allTasks = taskHolder.querySelectorAll('.taskItem');
+        allTasks.forEach(task => {
+            if (task.style.backgroundColor === listColor) {
+                task.remove(); // Remove the task if its background color matches the list
+            }
+        });
+    
+        listItem.remove(); // Remove the list from the DOM
+        saveToLocalStorage(); // Save changes to local storage
     });
+    
+    
 
     // Event listener for the add button
     addButton.addEventListener('click', function() {

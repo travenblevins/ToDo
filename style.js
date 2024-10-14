@@ -74,6 +74,9 @@ topButton.addEventListener('click', function add() {
 
     deleteButton.addEventListener('click', function() {
         listItem.remove(); // Remove the list from the DOM
+        if(taskHolder) {
+            taskHolder.innerHTML = ''; // Clear all tasks
+        }
     });
 
     addButton.addEventListener('click', function() {
@@ -134,22 +137,24 @@ function createTaskElement(task) {
     });
 
     editButton.addEventListener('click', function() {
-        const editInput = document.createElement('input');
-        editInput.value = task.value;
+        if (!taskItem.querySelector('input')) {
+            const editInput = document.createElement('input');
+            editInput.value = task.value;
 
-        const saveButton = document.createElement('button');
-        saveButton.innerHTML = 'Save';
+            const saveButton = document.createElement('button');
+            saveButton.innerHTML = 'Save';
 
-        taskItem.appendChild(editInput);
-        taskItem.appendChild(saveButton);
+            taskItem.appendChild(editInput);
+            taskItem.appendChild(saveButton);
 
-        saveButton.addEventListener('click', function() {
-            task.value = editInput.value; // Update task value
-            newTaskElement.innerHTML = task.value; // Update displayed task value
-            taskItem.removeChild(editInput); // Remove edit input
-            taskItem.removeChild(saveButton); // Remove save button
-            saveToLocalStorage(); // Save to local storage
-        });
+            saveButton.addEventListener('click', function() {
+                task.value = editInput.value; // Update task value
+                newTaskElement.innerHTML = task.value; // Update displayed task value
+                taskItem.removeChild(editInput); // Remove edit input
+                taskItem.removeChild(saveButton); // Remove save button
+                saveToLocalStorage(); // Save to local storage
+            });
+        }
     });
 
     return taskItem; // Return the created task element
@@ -183,15 +188,52 @@ function restoreList(listData) {
 
     listItem.appendChild(newListElement);
 
+    const inputTask = document.createElement('input');
+    inputTask.placeholder = 'Add Task';
+    const addButton = document.createElement('button');
+    const deleteButton = document.createElement('button');
+    addButton.innerHTML = 'Add Item';
+    deleteButton.innerHTML = 'Delete';
+
+    listItem.appendChild(inputTask);
+    listItem.appendChild(addButton);
+    listItem.appendChild(deleteButton);
+
+    // Event listener for the delete button
+    deleteButton.addEventListener('click', function() {
+        listItem.remove(); // Remove the list from the DOM
+        if(taskHolder) {
+            taskHolder.innerHTML = ''; // Clear all tasks
+        }
+    });
+
+    // Event listener for the add button
+    addButton.addEventListener('click', function() {
+        const taskValue = inputTask.value;
+        if (!taskValue) return; // Prevent empty tasks
+
+        const taskId = taskIdCounter++;
+        const newTask = new Task(taskValue, listData.backgroundColor, taskId);
+        listData.tasks.push(newTask); // Add to the restored list's tasks
+
+        const taskItem = createTaskElement(newTask); // Create the task element
+        taskHolder.appendChild(taskItem); // Append taskItem to the taskHolder (column 2)
+        inputTask.value = ''; // Clear task input field
+
+        saveToLocalStorage(); // Save to local storage
+    });
+
+    // Restore tasks for this list
     listData.tasks.forEach(task => {
         const newTask = new Task(task.value, task.color, task.id, task.completed); // Restore completed state
         const taskItem = createTaskElement(newTask); // Create the task element
         taskItem.style.textDecoration = task.completed ? 'line-through' : 'none'; // Set completion style
-        taskHolder.appendChild(taskItem); // Append to task holder
+        taskHolder.appendChild(taskItem); // Append taskItem to the taskHolder (column 2)
     });
 
-    box.appendChild(listItem); // Append the list
+    box.appendChild(listItem); // Append the list to the main box
 }
+
 
 function loadFromLocalStorage() {
     const savedData = localStorage.getItem('taskLists');

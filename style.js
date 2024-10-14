@@ -5,15 +5,16 @@ function getRandomColor() {
         g = Math.floor(Math.random() * 256);
         b = Math.floor(Math.random() * 256);
     } while (r + g + b > 255); // Ensure the color is dark enough
-    
+
     return `rgb(${r}, ${g}, ${b})`; // Return the RGB string
 }
 
-class Task { // Changed class name to Task for convention
-    constructor(value, color, id) { // Added color and id parameters
+class Task {
+    constructor(value, color, id, completed = false) {
         this.value = value;
-        this.color = color; // Store background color for the task
-        this.id = id; // Unique ID for each task
+        this.color = color;
+        this.id = id;
+        this.completed = completed; // Track completion status
     }
 
     edit(input) {
@@ -21,131 +22,194 @@ class Task { // Changed class name to Task for convention
     }
 }
 
-class List { // Changed class name to List for convention
+class List {
     constructor(name) {
         this.name = name;
-        this.tasks = []; // Initialize tasks array
+        this.tasks = [];
     }
 
     addTask(task) {
-        this.tasks.push(task); // Add a task to the list
+        this.tasks.push(task);
     }
 }
 
-class User { // Changed class name to User for convention
-    constructor(name) {
-        this.name = name;
-        this.lists = []; // Initialize lists array
-    }
-
-    addList(list) {
-        this.lists.push(list); // Add a list to the user's lists
-    }
-}
-
+const input = document.querySelector('#input');
 const topButton = document.querySelector('.top-button');
 const box = document.querySelector('.box');
 const taskHolder = document.querySelector('.taskHolder');
-let listIdCounter = 0; // Unique list ID counter
+const resetButton = document.querySelector('.reset-button'); // Reference the reset button
 let taskIdCounter = 0; // Unique task ID counter
 
 topButton.addEventListener('click', function add() {
-    const listContainer = document.createElement('div');
+    const listName = input.value;
+    if (!listName) return; // Prevent empty list names
 
-    const listName = input.value; // Use input value as list name
-    const newList = new List(listName); // Create a new list instance
+    const newList = new List(listName);
+    const backgroundColor = getRandomColor(); // Generate a random background color
+
+    const listItem = document.createElement('div');
+    listItem.classList.add('listItem');
+    listItem.style.backgroundColor = backgroundColor;
 
     const newListElement = document.createElement('div');
     newListElement.innerHTML = listName;
 
-    const addButton = document.createElement('button');
-    const deleteButton = document.createElement('button');
     const inputTask = document.createElement('input');
-
     inputTask.placeholder = 'Add Task';
+
+    const addButton = document.createElement('button');
     addButton.innerHTML = 'Add Item';
+
+    const deleteButton = document.createElement('button');
     deleteButton.innerHTML = 'Delete';
 
-    const listItem = document.createElement('div');
     listItem.appendChild(newListElement);
     listItem.appendChild(inputTask);
     listItem.appendChild(addButton);
     listItem.appendChild(deleteButton);
+    
+    box.appendChild(listItem);
+    input.value = ''; // Clear input field
+    saveToLocalStorage
 
     deleteButton.addEventListener('click', function() {
         listItem.remove(); // Remove the list from the DOM
-        
-        // Remove all tasks associated with this list from column 2
-        newList.tasks.forEach(task => { // Iterate through tasks and delete them
-            const taskElement = document.getElementById(`task-${task.id}`);
-            if (taskElement) {
-                taskElement.remove(); // Remove corresponding task from column 2
-            }
-        });
     });
-
-    listItem.classList.add('listItem');
-
-    const backgroundColor = getRandomColor();
-    listItem.style.backgroundColor = backgroundColor; // Set background color
-
-    listContainer.appendChild(listItem);
-    input.value = ''; // Clear input field
-
-    box.appendChild(listContainer);
 
     addButton.addEventListener('click', function() {
-        const taskValue = inputTask.value; // Get task value
-        const taskId = taskIdCounter++; // Increment task ID for uniqueness
+        const taskValue = inputTask.value;
+        if (!taskValue) return; // Prevent empty tasks
 
-        const newTask = new Task(taskValue, backgroundColor, taskId); // Create a new task with value, color, and ID
-        newList.addTask(newTask); // Add task to the list
+        const taskId = taskIdCounter++;
+        const newTask = new Task(taskValue, backgroundColor, taskId);
+        newList.addTask(newTask); // Add the new task to the list
 
-        const newTaskElement = document.createElement('div');
-        newTaskElement.innerHTML = taskValue;
-        newTaskElement.style.backgroundColor = backgroundColor; // Set the background color for the task
-
-        const editButton = document.createElement('button');
-        const deleteTaskButton = document.createElement('button');
-        editButton.innerHTML = 'Edit';
-        deleteTaskButton.innerHTML = 'Delete';
-
-        const taskItem = document.createElement('div');
-        taskItem.appendChild(newTaskElement);
-        taskItem.appendChild(editButton);
-        taskItem.appendChild(deleteTaskButton);
-        taskItem.classList.add('taskItem');
-        taskItem.id = `task-${taskId}`; // Assign unique ID to the task
-
-        // Append the task to column 2
-        taskHolder.appendChild(taskItem);
-
+        const taskItem = createTaskElement(newTask); // Create the task element
+        taskHolder.appendChild(taskItem); // Append to task holder
         inputTask.value = ''; // Clear task input field
 
-        // Delete individual task
-        deleteTaskButton.addEventListener('click', function() {
-            taskItem.remove(); // Remove the task from column 2
-        });
+        saveToLocalStorage(); // Save to local storage
+    });
 
-        // Edit individual task
-        editButton.addEventListener('click', function() {
-            const editInput = document.createElement('input');
-            editInput.placeholder = 'Edit Task';
-            editInput.value = taskValue; // Set current task value in input
-            
-            const saveButton = document.createElement('button');
-            saveButton.innerHTML = 'Save';
+    box.appendChild(listItem);
+    saveToLocalStorage(); // Save to local storage
+});
 
-            // Insert the edit input and save button into the task item
-            taskItem.appendChild(editInput);
-            taskItem.appendChild(saveButton);
+function createTaskElement(task) {
+    const newTaskElement = document.createElement('div');
+    newTaskElement.innerHTML = task.value;
 
-            // Save button functionality
-            saveButton.addEventListener('click', function() {
-                newTaskElement.innerHTML = editInput.value; // Update task display
-                taskItem.removeChild(editInput); // Remove edit input
-                taskItem.removeChild(saveButton); 
-            });
+    const taskItem = document.createElement('div');
+    taskItem.classList.add('taskItem');
+    taskItem.id = `task-${task.id}`;
+    taskItem.style.backgroundColor = task.color; // Set background color
+
+    const editButton = document.createElement('button');
+    const deleteTaskButton = document.createElement('button');
+    const completedButton = document.createElement('button');
+
+    editButton.innerHTML = 'Edit';
+    deleteTaskButton.innerHTML = 'Delete';
+    completedButton.innerHTML = task.completed ? 'Undo' : 'Completed';
+
+    taskItem.appendChild(newTaskElement);
+    taskItem.appendChild(editButton);
+    taskItem.appendChild(deleteTaskButton);
+    taskItem.appendChild(completedButton);
+
+    // Mark task as completed if it is
+    if (task.completed) {
+        taskItem.style.textDecoration = 'line-through';
+    }
+
+    completedButton.addEventListener('click', function() {
+        task.completed = !task.completed; // Toggle completion status
+        taskItem.style.textDecoration = task.completed ? 'line-through' : 'none';
+        completedButton.innerHTML = task.completed ? 'Undo' : 'Completed'; // Update button text
+        saveToLocalStorage(); // Save to local storage
+    });
+
+    deleteTaskButton.addEventListener('click', function() {
+        taskItem.remove(); // Remove the task from the DOM
+    });
+
+    editButton.addEventListener('click', function() {
+        const editInput = document.createElement('input');
+        editInput.value = task.value;
+
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = 'Save';
+
+        taskItem.appendChild(editInput);
+        taskItem.appendChild(saveButton);
+
+        saveButton.addEventListener('click', function() {
+            task.value = editInput.value; // Update task value
+            newTaskElement.innerHTML = task.value; // Update displayed task value
+            taskItem.removeChild(editInput); // Remove edit input
+            taskItem.removeChild(saveButton); // Remove save button
+            saveToLocalStorage(); // Save to local storage
         });
     });
+
+    return taskItem; // Return the created task element
+}
+
+function saveToLocalStorage() {
+    const lists = [];
+    document.querySelectorAll('.listItem').forEach(listItem => {
+        const listName = listItem.querySelector('div').textContent;
+        const backgroundColor = listItem.style.backgroundColor;
+        const tasks = Array.from(taskHolder.querySelectorAll('.taskItem')).map(taskItem => {
+            return {
+                value: taskItem.querySelector('div').textContent,
+                color: taskItem.style.backgroundColor,
+                id: taskItem.id.split('-')[1],
+                completed: taskItem.style.textDecoration === 'line-through' // Track completion status
+            };
+        });
+        lists.push({ name: listName, tasks, backgroundColor });
+    });
+    localStorage.setItem('taskLists', JSON.stringify(lists));
+}
+
+function restoreList(listData) {
+    const listItem = document.createElement('div');
+    listItem.classList.add('listItem');
+    listItem.style.backgroundColor = listData.backgroundColor; // Set background color
+
+    const newListElement = document.createElement('div');
+    newListElement.innerHTML = listData.name;
+
+    listItem.appendChild(newListElement);
+
+    listData.tasks.forEach(task => {
+        const newTask = new Task(task.value, task.color, task.id, task.completed); // Restore completed state
+        const taskItem = createTaskElement(newTask); // Create the task element
+        taskItem.style.textDecoration = task.completed ? 'line-through' : 'none'; // Set completion style
+        taskHolder.appendChild(taskItem); // Append to task holder
+    });
+
+    box.appendChild(listItem); // Append the list
+}
+
+function loadFromLocalStorage() {
+    const savedData = localStorage.getItem('taskLists');
+    if (savedData) {
+        const lists = JSON.parse(savedData);
+        lists.forEach(listData => restoreList(listData)); // Restore each list
+    }
+}
+
+// Event listener for reset button
+resetButton.addEventListener('click', function() {
+    // Clear only the taskHolder and box elements (remove existing lists and tasks)
+    document.querySelectorAll('.listItem').forEach(listItem => listItem.remove()); // Remove all lists
+    taskHolder.innerHTML = ''; // Clear all tasks
+
+    // Clear local storage
+    localStorage.removeItem('taskLists');
 });
+
+// Load saved data when the page loads
+window.onload = loadFromLocalStorage;

@@ -1,3 +1,57 @@
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('search');
+
+// Add event listener for the search button
+searchButton.addEventListener('click', function() {
+    const searchValue = searchInput.value.trim(); // Get the trimmed search value
+    const backgroundColor = '9134cb'; // Desired background color in hex
+
+    if (!searchValue) {
+        alert('No input found');
+        return; // Prevent further execution if the input is empty
+    }
+
+    const listItems = document.querySelectorAll('.listItem'); // Select all list items
+    let matchFound = false; // Flag to track if any match is found
+
+    listItems.forEach(listItem => {
+        const listText = listItem.firstChild.textContent.toLowerCase(); // Get list name text
+        let listMatch = false; // Flag for matching list item
+
+        // Highlight the list item if it matches the search value
+        if (listText.includes(searchValue.toLowerCase())) {
+            listItem.style.backgroundColor = `#${backgroundColor}`; // Highlight the matched list item
+            listMatch = true; // Set list match flag to true
+            matchFound = true; // Set match found flag to true
+        } else {
+            listItem.style.backgroundColor = ''; // Reset background color if not matched
+        }
+
+        // Select all task items within this list
+        const taskItems = listItem.querySelectorAll('.taskItem'); 
+
+        taskItems.forEach(item => {
+            const taskText = item.firstChild.textContent.toLowerCase(); // Get the text content of the task
+            if (taskText.includes(searchValue.toLowerCase())) { // Check if it includes the search value
+                item.style.backgroundColor = `#${backgroundColor}`; // Highlight the matched task item
+                matchFound = true; // Set match found flag to true
+            } else {
+                item.style.backgroundColor = ''; // Reset background color if not matched
+            }
+        });
+
+        // If the list has matching tasks, highlight it too
+        if (listMatch) {
+            listItem.style.backgroundColor = `#${backgroundColor}`; // Highlight the matched list item
+        }
+    });
+
+    if (!matchFound) {
+        alert('No match found'); // Alert if no tasks or lists match the search
+    }
+});
+
+
 function getRandomColor() {
     let r, g, b;
     do {
@@ -73,8 +127,8 @@ topButton.addEventListener('click', function add() {
     saveToLocalStorage
 
     deleteButton.addEventListener('click', function() {
-        listItem.remove(); // Remove the list from the DOM
-        if(taskHolder) {
+        if(listItem) {
+            listItem.remove(); // Remove the list from the DOM
             taskHolder.innerHTML = ''; // Clear all tasks
         }
     });
@@ -201,9 +255,9 @@ function restoreList(listData) {
 
     // Event listener for the delete button
     deleteButton.addEventListener('click', function() {
-        listItem.remove(); // Remove the list from the DOM
-        if(taskHolder) {
+        if(listItem) {
             taskHolder.innerHTML = ''; // Clear all tasks
+            listItem.remove(); // Remove the list from the DOM
         }
     });
 

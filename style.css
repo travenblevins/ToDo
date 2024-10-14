@@ -113,6 +113,7 @@ input {
     display: flex; /* Use flexbox for alignment */
     align-items: center; /* Center items vertically */
     justify-content: center; /* Center items horizontally */
+    height:42px;
 }
 
 .search button:hover {
